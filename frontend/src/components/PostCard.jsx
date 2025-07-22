@@ -1,0 +1,430 @@
+// import { Card, CardContent } from "@/components/ui/card"
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+// import { Button } from "@/components/ui/button"
+// import { Heart, MessageCircle, Trash } from "lucide-react"
+// import { useState } from "react"
+// import { formatDistanceToNow } from "date-fns"
+// import { useDispatch, useSelector } from "react-redux"
+// import axios from "axios"
+// import { toast } from "sonner"
+// import { toggleFollowUser } from "./followToggleHandler"
+
+
+// const PostCard = ({ post, onLike, onDelete, onCommentClick, refetch }) => {
+//   const dispatch = useDispatch();
+//   const { user } = useSelector((state) => state.auth)
+//   const currentUserId = user?._id
+//   const liked = post.likes.includes(currentUserId)
+//   const isOwner = currentUserId === post.owner._id
+//   // const alreadyFollowing = user.followings.includes(post?.owner?._id)
+
+
+//   const [isLiked, setIsLiked] = useState(liked)
+
+//   // const [isFollowing, setIsFollowing] = useState(alreadyFollowing)
+//   // console.log(isFollowing);
+
+//   const isFollowing = user?.followings?.some(f => (f._id || f) === post?.owner?._id)
+//   const [loadingFollow, setLoadingFollow] = useState(false)
+//   const isVideo = post.image?.url?.endsWith(".mp4")
+//   const postId = post._id
+
+//   const handleLike = async (postId) => {
+//     setIsLiked(!isLiked) // Optimistic update
+//     try {
+//       const res = await axios.get(
+//         `http://localhost:3000/api/v1/posts/post/reaction/${postId}`,
+//         {
+//           headers: { "Content-Type": "application/json" },
+//           withCredentials: true,
+//         }
+//       )
+//       if (res.data.success) {
+//         toast.success(res.data.message)
+//         console.log(res.data);
+        
+//       } else {
+//         setIsLiked((prev) => !prev)
+//         toast.error(res.data.message || "Failed to like/unlike post")
+//       }
+//     } catch (error) {
+//       console.error("Error liking post:", error)
+//       setIsLiked((prev) => !prev)
+//       toast.error("Failed to like/unlike post")
+//     }
+//   }
+
+//   const deleteHandler = async (postId) => {
+//     if (!window.confirm("Are you sure you want to delete this post?")) return
+
+//     try {
+//       const res = await axios.delete(
+//         `http://localhost:3000/api/v1/posts/post/delete/${postId}`,
+//         {
+//           headers: { "Content-Type": "application/json" },
+//           withCredentials: true,
+//         }
+//       )
+//       if (res.data.success) {
+//         toast.success(res.data.message)
+//         onDelete?.(postId)
+//         refetch()
+//       }
+//     } catch (error) {
+//       console.error(error)
+//       toast.error("Failed to delete post")
+//     }
+//   }
+
+//   // const handleFollowToggle = async () => {
+//   //   setLoadingFollow(true)
+//   //   try {
+//   //     //simple method
+//   //     const endpoint = isFollowing
+//   //       ? `http://localhost:3000/api/v1/posts/post/unfollow/${post?.owner?._id}`
+//   //       : `http://localhost:3000/api/v1/posts/post/follow/${post?.owner?._id}`
+
+//   //     const res = await axios.get(endpoint, {
+//   //       headers: { "Content-Type": "application/json" },
+//   //       withCredentials: true,
+//   //     })
+
+//   //     if (res.data.success) {
+//   //       toast.success(res.data.message)
+//   //       setIsFollowing(!isFollowing)
+//   //     } else {
+//   //       toast.error(res.data.message || "Failed to follow/unfollow")
+//   //     }
+//   //   } catch (error) {
+//   //     console.error("Follow error:", error)
+//   //     toast.error(error.response.data.message)
+//   //   } finally {
+//   //     setLoadingFollow(false)
+//   //   }
+//   // }
+
+//   const handleFollowToggle = async () => {
+//     setLoadingFollow(true)
+//     const result = await toggleFollowUser({
+//       targetUserId: post?.owner?._id,
+//       isCurrentlyFollowing: isFollowing,
+//       dispatch,
+//     })
+//     setLoadingFollow(false)
+//   }
+
+//   return (
+//     <Card className="mb-4 shadow-sm hover:shadow-md transition-all duration-200 rounded-xl border border-gray-100 dark:border-gray-800">
+//       <CardContent className="p-4 space-y-3">
+//         {/* USER */}
+//         <div className="flex items-center gap-3">
+//           <Avatar className="w-10 h-10 border border-gray-200 dark:border-gray-700">
+//             <AvatarImage
+//               src={post?.owner?.avatar?.url || "/placeholder.svg"}
+//               alt={post?.owner?.fullname || "User Avatar"}
+//             />
+//             <AvatarFallback className="bg-gray-200 text-gray-600">
+//               {post?.owner?.fullname?.charAt(0)?.toUpperCase() || "U"}
+//             </AvatarFallback>
+//           </Avatar>
+//           <div className="flex flex-col">
+//             <span className="font-semibold text-gray-900 dark:text-gray-100">
+//               {post?.owner?.fullname || "Unknown User"}
+//             </span>
+//             <span className="text-xs text-muted-foreground">
+//               {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+//             </span>
+//           </div>
+//         </div>
+
+//         {/* CONTENT */}
+//         <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">{post.caption}</p>
+//         <p className="text-base text-gray-800 dark:text-gray-200 leading-relaxed">{post.content}</p>
+
+//         {post?.image?.url && (
+//           <div className="rounded-lg overflow-hidden max-h-[400px] bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+//             {isVideo ? (
+//               <video controls className="w-full h-auto object-contain rounded-lg">
+//                 <source src={post.image.url} type="video/mp4" />
+//                 Your browser does not support the video tag.
+//               </video>
+//             ) : (
+//               <img
+//                 src={post.image.url}
+//                 alt="Post Media"
+//                 className="w-full h-auto object-contain rounded-lg"
+//               />
+//             )}
+//           </div>
+//         )}
+
+//         {/* ACTIONS */}
+//         <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
+//           <div className="flex gap-2 items-center">
+//             {/* LIKE */}
+//             <Button
+//               variant="ghost"
+//               size="sm"
+//               onClick={() => handleLike(postId)}
+//               className={`gap-1 px-3 py-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer ${isLiked ? "text-red-500 hover:text-red-600" : "text-muted-foreground hover:text-red-500"
+//                 }`}
+//             >
+//               <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+//               <span className="text-sm">{post?.likes?.length}</span>
+//             </Button>
+
+//             {/* COMMENT */}
+//             <Button
+//               variant="ghost"
+//               size="sm"
+//               className="gap-1 px-3 py-1 rounded-full text-muted-foreground hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-500"
+//               onClick={() => onCommentClick?.(post._id)}
+//             >
+//               <MessageCircle size={18} />
+//               <span className="text-sm">{post.comments.length}</span>
+//             </Button>
+
+//             {/* FOLLOW */}
+//             {!isOwner && (
+//               <Button
+//                 variant={isFollowing ? "outline" : "default"}
+//                 size="sm"
+//                 disabled={loadingFollow}
+//                 onClick={handleFollowToggle}
+//                 className="px-4 py-1 rounded-full text-sm cursor-pointer"
+//               >
+//                 {loadingFollow ? "..." : isFollowing ? "Following" : "Follow"}
+//               </Button>
+//             )}
+//           </div>
+
+//           {/* DELETE */}
+//           {isOwner && (
+//             <Button
+//               variant="ghost"
+//               size="sm"
+//               className="px-3 py-1 rounded-full text-muted-foreground hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500"
+//               onClick={() => deleteHandler(postId)}
+//             >
+//               <Trash size={18} className="text-red-500" />
+//             </Button>
+//           )}
+//         </div>
+//       </CardContent>
+//     </Card>
+//   )
+// }
+
+// export default PostCard
+
+
+
+
+
+
+
+
+import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Heart, MessageCircle, Trash } from "lucide-react"
+import { useState } from "react"
+import { formatDistanceToNow } from "date-fns"
+import { useDispatch, useSelector } from "react-redux"
+import axios from "axios"
+import { toast } from "sonner"
+import { toggleFollowUser } from "./followToggleHandler"
+
+const PostCard = ({ post, onDelete, onCommentClick, refetch }) => {
+  const dispatch = useDispatch()
+  const { user } = useSelector((state) => state.auth)
+  const currentUserId = user?._id
+  const isOwner = currentUserId === post.owner._id
+
+  const [isLiked, setIsLiked] = useState(post.likes.includes(currentUserId))
+  const [likeCount, setLikeCount] = useState(post.likes.length)
+  const [comments, setComments] = useState(post.comments || [])
+  const [showComments, setShowComments] = useState(false)
+  const [newComment, setNewComment] = useState("")
+  const isFollowing = user?.followings?.some(f => (f._id || f) === post?.owner?._id)
+  const [loadingFollow, setLoadingFollow] = useState(false)
+  const isVideo = post.image?.url?.endsWith(".mp4")
+  const postId = post._id
+
+  const handleLike = async () => {
+    const nextLiked = !isLiked
+    setIsLiked(nextLiked)
+    setLikeCount(prev => nextLiked ? prev + 1 : prev - 1)
+
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/api/v1/posts/post/reaction/${postId}`,
+        { withCredentials: true }
+      )
+      if (!res.data.success) {
+        throw new Error(res.data.message)
+      }
+    } catch (error) {
+      setIsLiked(!nextLiked)
+      setLikeCount(prev => nextLiked ? prev - 1 : prev + 1)
+      toast.error(error.response.data.message ||"Failed to like/unlike post")
+    }
+  }
+
+  const deleteHandler = async () => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return
+    try {
+      const res = await axios.delete(
+        `http://localhost:3000/api/v1/posts/post/delete/${postId}`,
+        { withCredentials: true }
+      )
+      if (res.data.success) {
+        toast.success(res.data.message)
+        onDelete?.(postId)
+        refetch?.()
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Failed to delete post")
+    }
+  }
+
+  const handleFollowToggle = async () => {
+    setLoadingFollow(true)
+    await toggleFollowUser({
+      targetUserId: post?.owner?._id,
+      isCurrentlyFollowing: isFollowing,
+      dispatch,
+    })
+    setLoadingFollow(false)
+  }
+
+  const handleCommentSubmit = async () => {
+    console.log(newComment);
+    
+    // if (!newComment.trim()) return
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/api/v1/posts/post/commentOnPost/${postId}`,
+        { newComment },
+        { withCredentials: true }
+      )
+      if (res.data.success) {
+        const newC = {
+          comment: newComment,
+          commentedBy: {
+            fullname: user.fullname,
+            avatar: user.avatar,
+          },
+        }
+        setComments(prev => [newC, ...prev])
+        setNewComment("")
+        toast.success(res.data.message||"Comment added")
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message || "Failed to add comment")
+    }
+  }
+
+  return (
+    <>
+    <Card className="mb-4 shadow-sm hover:shadow-md rounded-xl border border-gray-100 dark:border-gray-800">
+      <CardContent className="p-4 space-y-3">
+        {/* USER INFO */}
+        <div className="flex items-center gap-3">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={post?.owner?.avatar?.url || "/placeholder.svg"} />
+            <AvatarFallback>{post?.owner?.fullname?.charAt(0) || "U"}</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">{post?.owner?.fullname}</p>
+            <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</p>
+          </div>
+        </div>
+
+        {/* POST CONTENT */}
+        <p className="text-gray-800 dark:text-gray-200">{post.caption}</p>
+        <p className="text-gray-800 dark:text-gray-200">{post.content}</p>
+        {post?.image?.url && (
+          <div className="rounded-lg overflow-hidden max-h-[400px] bg-gray-100 dark:bg-gray-900">
+            {isVideo ? (
+              <video controls className="w-full h-auto rounded-lg">
+                <source src={post.image.url} type="video/mp4" />
+              </video>
+            ) : (
+              <img src={post.image.url} alt="Post" className="w-full h-auto object-cover rounded-lg" />
+            )}
+          </div>
+        )}
+
+        {/* ACTIONS */}
+        <div className="flex items-center justify-between border-t pt-2">
+          <div className="flex gap-2 items-center">
+            <Button variant="ghost" size="sm" onClick={handleLike}
+              className={`gap-1 px-3 py-1 rounded-full ${isLiked ? "text-red-500" : "text-muted-foreground"}`}>
+              <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+              <span className="text-sm">{likeCount}</span>
+            </Button>
+
+            <Button variant="ghost" size="sm" onClick={() => setShowComments(!showComments)}
+              className="gap-1 px-3 py-1 rounded-full text-muted-foreground hover:text-blue-500">
+              <MessageCircle size={18} />
+              <span className="text-sm">{comments?.length || 0}</span>
+            </Button>
+
+            {!isOwner && (
+              <Button variant={isFollowing ? "outline" : "default"} size="sm"
+                disabled={loadingFollow} onClick={handleFollowToggle}
+                className="px-4 py-1 rounded-full text-sm">
+                {loadingFollow ? "..." : isFollowing ? "Following" : "Follow"}
+              </Button>
+            )}
+          </div>
+
+          {isOwner && (
+            <Button variant="ghost" size="sm" onClick={deleteHandler}
+              className="px-3 py-1 rounded-full text-red-500">
+              <Trash size={18} />
+            </Button>
+          )}
+        </div>
+
+        {/* COMMENT SECTION */}
+        {showComments && (
+          <div className="space-y-3 pt-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write a comment..."
+                className="flex-1 px-3 py-1 rounded-full border dark:bg-gray-800 dark:border-gray-700 text-sm"
+              />
+              <Button onClick={handleCommentSubmit} size="sm" className="rounded-full text-sm cursor-pointer">
+                Post
+              </Button>
+            </div>
+
+            <div className="space-y-2 max-h-[200px] overflow-y-auto">
+              {comments.map((c, index) => (
+                <div key={index} className="flex items-start gap-2 text-sm">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={c?.commentedBy?.avatar?.url || "/placeholder.svg"} />
+                    <AvatarFallback>{c?.commentedBy?.fullname?.charAt(0) || "U"}</AvatarFallback>
+                  </Avatar>
+                  <div className="bg-muted p-2 rounded-lg w-full">
+                    <p className="font-medium">{c?.commentedBy?.fullname}</p>
+                    <p className="text-muted-foreground">{c?.comment}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+    </>
+  )
+}
+
+export default PostCard
