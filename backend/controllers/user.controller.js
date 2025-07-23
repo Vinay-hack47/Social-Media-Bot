@@ -131,42 +131,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-// export const updateProfile = async (req, res) => {
-//   try {
-//     const { fullname, email, bio, location, website, mobile } = req.body;
-//     const userId = req.id;
 
-//     const file = req.file;
-//     console.log(file);
-
-//     const fileUri = getDataUri(file);
-//     const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res
-//         .status(404)
-//         .json({ message: "User not found", success: false });
-//     }
-
-//     if (fullname) user.fullname = fullname;
-//     if (email) user.email = email;
-//     if (mobile) user.mobile = mobile;
-
-//     if (bio) user.profile.bio = bio;
-//     if (location) user.profile.location = location;
-//     if (website) user.profile.website = website;
-//     if (file) user.avatar.
-
-     
-
-//     await user.save();
-
-//     res.status(200).json({ message: "Updated successfully", user });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error.", error: error.message });
-//   }
-// };
 
 
 export const updateProfile = async (req, res) => {

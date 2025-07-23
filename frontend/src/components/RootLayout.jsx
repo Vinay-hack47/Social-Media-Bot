@@ -15,7 +15,6 @@ const RootLayout = () => {
         dispatch(setUser(user))
       } catch (err) {
         console.error("Auto-fetch user failed:", err.message)
-        // Optional: toast.error("Session expired or not logged in.")
       }
     }
 

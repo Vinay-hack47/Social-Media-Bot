@@ -15,7 +15,6 @@ import { fetchCurrentUser } from "@/api/user"
 
 const SuggestionsSidebar = () => {
   const { allUser } = useSelector((state) => state.auth);
-  // console.log("all user to show",allUser);
   
   const { user } = useSelector((state) => state.auth);
   
@@ -23,7 +22,6 @@ const SuggestionsSidebar = () => {
 
   const dispatch = useDispatch();
 
-  // Example: Filter out current user or already followed users if needed
   const [suggestedUsers, setSuggestedUsers] = useState([])
   
 

@@ -103,110 +103,7 @@ router.get("/access-token", async (req, res) => {
 //todo-> then we will access it in callback
 
 // OAuth 2.0 with PKCE Callback
-// router.get("/callback", async (req, res) => {
-//   const { code, state } = req.query;
 
-//   if (!code || !state) {
-//     return res.status(400).json({ message: "Missing code or state in query." });
-//   }
-
-//   try {
-//     // Get code_verifier and userId from Redis
-//     const [codeVerifier, userId] = await Promise.all([
-//       redisClient.get(`twitter_code_verifier:${state}`),
-//       redisClient.get(`twitter_user_id:${state}`),
-//     ]);
-
-//     if (!codeVerifier) {
-//       return res
-//         .status(400)
-//         .json({ message: "Session expired or invalid state." });
-//     }
-//     if (!userId) {
-//       return res
-//         .status(400)
-//         .json({ message: "UserId of user not found from redis." });
-//     }
-
-//     // Create Basic Auth for token exchange
-//     const basicAuth = Buffer.from(
-//       `${process.env.TWITTER_CLIENT_ID}:${process.env.TWITTER_CLIENT_SECRET}`
-//     ).toString("base64");
-
-//     // Exchange code for tokens
-//     const tokenResponse = await axios.post(
-//       "https://api.twitter.com/2/oauth2/token",
-//       new URLSearchParams({
-//         grant_type: "authorization_code",
-//         code,
-//         redirect_uri: process.env.TWITTER_CALLBACK_URL,
-//         code_verifier: codeVerifier,
-//       }),
-//       {
-//         headers: {
-//           "Content-Type": "application/x-www-form-urlencoded",
-//           Authorization: `Basic ${basicAuth}`,
-//         },
-//       }
-//     );
-
-//     const { access_token, refresh_token, expires_in } = tokenResponse.data;
-
-//     if (!access_token || !refresh_token) {
-//       return res.status(400).json({ message: "Missing tokens from Twitter." });
-//     }
-
-//     // Get Twitter user info
-//     const twitterUserRes = await axios.get(
-//       "https://api.twitter.com/2/users/me",
-//       {
-//         headers: {
-//           Authorization: `Bearer ${access_token}`,
-//         },
-//       }
-//     );
-
-//     const twitterUser = twitterUserRes.data?.data;
-//     if (!twitterUser) {
-//       return res
-//         .status(400)
-//         .json({ message: "Unable to fetch Twitter user info." });
-//     }
-
-//     // Fetch your user from DB
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ message: "App user not found." });
-//     }
-
-//     const encryptedAccessToken = encrypt(access_token);
-//     const encryptedRefreshToken = encrypt(refresh_token);
-//     console.log(encryptedAccessToken);
-//     console.log(encryptedRefreshToken);
-
-//     // Update Twitter connection
-//     user.twitter = {
-//       twitterId: twitterUser.id,
-//       username: twitterUser.username,
-//       accessToken: encryptedAccessToken,
-//       refreshToken: encryptedRefreshToken, // Using refresh_token as accessSecret
-//       expiresIn: expires_in, // Useful for refresh logic later
-//     };
-
-//     await user.save();
-
-//     return res.send("Twitter connected successfully using OAuth 2.0!");
-//   } catch (error) {
-//     console.error(
-//       "Twitter OAuth callback error:",
-//       error.response?.data || error.message
-//     );
-//     return res.status(500).json({
-//       message: " Twitter auth failed",
-//       error: error.response?.data || error.message,
-//     });
-//   }
-// });
 
 router.get("/callback", async (req, res) => {
   console.log("Callback Called");
@@ -365,36 +262,7 @@ router.post("/post-tweet", isAuthenticated, async (req, res) => {
   }
 });
 
-// router.post("/tweet-with-image", singleUpload, async (req, res) => {
-//   const { caption, content } = req.body;
-//   const file = req.file;
 
-//   if (!file || !file.buffer)
-//     return res.status(400).json({ error: "Image file is required" });
-
-//   try {
-//     const mediaId = await twitterClient.v1.uploadMedia(file.buffer, {
-//       mimeType: file.mimetype,
-//     });
-
-//     const tweet = await twitterClient.v2.tweet({
-//       text: `${caption}\n\n${content}`,
-//       media: { media_ids: [mediaId] },
-//     });
-
-//     return res.status(200).json({
-//       message: "Tweet posted check it on your twitter!",
-//       tweet,
-//       success: true,
-//     });
-//   } catch (err) {
-//     console.error("Tweet failed:", err);
-//     return res.status(500).json({
-//       error: "Tweet failed",
-//       details: err?.data?.detail || err.message || "Unknown error",
-//     });
-//   }
-// });
 
 
 router.post("/tweet-with-image", isAuthenticated, singleUpload, async (req, res) => {

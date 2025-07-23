@@ -13,7 +13,7 @@ client.on('error', (err) => {
   console.error('Redis Client Error:', err);
 });
 
-await client.connect();
+// await client.connect();     -> Connect when trying to add the add a new platform, otherwise it is giving error of connection
 
 export default client;
 

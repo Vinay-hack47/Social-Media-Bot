@@ -1,13 +1,11 @@
-"use client" // This page uses client-side hooks and Redux
-
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import PostCard from "@/components/PostCard" // Updated import path
-import UserInfoSidebar from "@/components/UserInfoSidebar" // Updated import path
-import SuggestionsSidebar from "@/components/SuggestionsSidebar" // Updated import path
-import FeedToggle from "@/components/FeedToggle" // Updated import path
-import PostSkeleton from "@/components/skeletons/PostSkeleton" // Updated import path
-import useExploreFeed from "@/hooks/useExploreFeed" // Assuming this hook exists and works client-side
+import PostCard from "@/components/PostCard" 
+import UserInfoSidebar from "@/components/UserInfoSidebar" 
+import SuggestionsSidebar from "@/components/SuggestionsSidebar" 
+import FeedToggle from "@/components/FeedToggle" 
+import PostSkeleton from "@/components/skeletons/PostSkeleton" 
+import useExploreFeed from "@/hooks/useExploreFeed" 
 import Navbar from "@/components/Navbar"
 
 const Explore = () => {
@@ -18,16 +16,8 @@ const Explore = () => {
   
 
 
-  // Placeholder for onLike and onCommentClick handlers
-  // const handleLike = (postId) => {
-  //   console.log(`Liked post: ${postId}`)
-  //   // Implement actual like logic here (API call, state update)
-  //   // You might want to refetch posts or update the specific post in Redux state
-  // }
-
   const handleCommentClick = (postId) => {
     console.log(`Comment button clicked for post: ${postId}`)
-    // Implement logic to open a comment modal or navigate to post details
   }
 
   return (
