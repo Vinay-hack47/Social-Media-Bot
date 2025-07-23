@@ -2,7 +2,7 @@
 import express from "express";
 import axios from "axios";
 import twitterOAuth from "../utils/twitterOAuth.js";
-import redisClient from "../utils/redisClient.js";
+import redisClient, { connectRedis } from "../utils/redisClient.js";
 import { decrypt, encrypt } from "../utils/encrypt.js";
 import { TwitterApi } from "twitter-api-v2";
 import { User } from "../models/user.model.js";
@@ -15,6 +15,7 @@ import { twitterClient } from "../utils/twitterClient.js";
 const router = express.Router();
 
 router.get("/request-token", async (req, res) => {
+  await connectRedis();
   const url = "https://api.twitter.com/oauth/request_token";
   const oauth = twitterOAuth.authorize({
     url,
@@ -48,6 +49,7 @@ router.get("/request-token", async (req, res) => {
 });
 
 router.get("/access-token", async (req, res) => {
+  await connectRedis();
   const { oauth_token, oauth_verifier } = req.query;
 
   if (!oauth_token || !oauth_verifier) {
@@ -106,6 +108,7 @@ router.get("/access-token", async (req, res) => {
 
 
 router.get("/callback", async (req, res) => {
+  await connectRedis();
   console.log("Callback Called");
 
   const { code, state } = req.query;

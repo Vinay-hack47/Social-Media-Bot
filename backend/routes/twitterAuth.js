@@ -1,20 +1,21 @@
+
 import express from 'express'
 import { generateCodeChallenge, generateCodeVerifier } from '../utils/pkce.js'
-import redisClient from '../utils/redisClient.js'
+import redisClient, { connectRedis } from '../utils/redisClient.js'
 import querystring from 'querystring'
 import { isAuthenticated } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
 
-router.get('/twitter/auth-url',isAuthenticated, async (req, res) => {
+router.get('/twitter/auth-url', isAuthenticated, async (req, res) => {
   console.log("Auth called");
-  
-  const codeVerifier = generateCodeVerifier()
-  const codeChallenge = generateCodeChallenge(codeVerifier)
-  const state = crypto.randomUUID()
+
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = generateCodeChallenge(codeVerifier);
+  const state = crypto.randomUUID();
   const userId = req.id;
 
-  // Store code_verifier temporarily in Redis w ith key = state
+  await connectRedis();
   await redisClient.set(`twitter_code_verifier:${state}`, codeVerifier, { EX: 600 });
   await redisClient.set(`twitter_user_id:${state}`, userId);
 
@@ -26,11 +27,11 @@ router.get('/twitter/auth-url',isAuthenticated, async (req, res) => {
     state,
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
-  }
+  };
 
-  const authUrl = `https://twitter.com/i/oauth2/authorize?${querystring.stringify(params)}`
+  const authUrl = `https://twitter.com/i/oauth2/authorize?${querystring.stringify(params)}`;
 
-  res.status(200).json({ authUrl, success: true })
+  res.status(200).json({ authUrl, success: true });
 });
 
 

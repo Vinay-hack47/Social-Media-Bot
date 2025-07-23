@@ -1,5 +1,5 @@
 import { Post } from "../models/post.model.js";
-import { ScheduledPost } from "../models/ScheduledPost.js";
+// import { ScheduledPost } from "../models/ScheduledPost.js";
 import { User } from "../models/user.model.js";
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/dataUri.js";
@@ -377,41 +377,41 @@ export const deleteComment = async (req, res) => {
 // controllers/postController.js
 
 
-export const schedulePostController = async (req, res) => {
-  try {
-    const { content, caption, scheduledFor } = req.body
+// export const schedulePostController = async (req, res) => {
+//   try {
+//     const { content, caption, scheduledFor } = req.body
 
-    if (!scheduledFor || (!content && !caption && !req.file)) {
-      return res.status(400).json({ message: "Missing required fields" })
-    }
+//     if (!scheduledFor || (!content && !caption && !req.file)) {
+//       return res.status(400).json({ message: "Missing required fields" })
+//     }
 
-    let image = null
+//     let image = null
 
-    if (req.file) {
-      const fileUri = getDataUri(req.file)
-      const uploaded = await cloudinary.uploader.upload(fileUri.content, {
-        folder: "scheduled-posts"
-      })
-      image = {
-        public_id: uploaded.public_id,
-        url: uploaded.secure_url
-      }
-    }
+//     if (req.file) {
+//       const fileUri = getDataUri(req.file)
+//       const uploaded = await cloudinary.uploader.upload(fileUri.content, {
+//         folder: "scheduled-posts"
+//       })
+//       image = {
+//         public_id: uploaded.public_id,
+//         url: uploaded.secure_url
+//       }
+//     }
 
-    const newScheduledPost = await ScheduledPost.create({
-      user: req.id,
-      content,
-      caption,
-      scheduledFor,
-      image
-    })
+//     const newScheduledPost = await ScheduledPost.create({
+//       user: req.id,
+//       content,
+//       caption,
+//       scheduledFor,
+//       image
+//     })
 
-    res.status(201).json({
-      message: "Post scheduled successfully",
-      post: newScheduledPost
-    })
-  } catch (err) {
-    console.error("Post scheduling error:", err)
-    res.status(500).json({ message: "Server error", error: err.message })
-  }
-}
+//     res.status(201).json({
+//       message: "Post scheduled successfully",
+//       post: newScheduledPost
+//     })
+//   } catch (err) {
+//     console.error("Post scheduling error:", err)
+//     res.status(500).json({ message: "Server error", error: err.message })
+//   }
+// }

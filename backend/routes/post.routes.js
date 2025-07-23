@@ -1,6 +1,6 @@
 import express from "express";
 import { isAuthenticated, isAdmin } from "../middleware/auth.middleware.js";
-import { addComment, createPost, deleteComment, deletePost, followUser, getAllPosts, getPostOfFollowing, likeAndUnlikePost, schedulePostController, unFollowUser } from "../controllers/post.controller.js";
+import { addComment, createPost, deleteComment, deletePost, followUser, getAllPosts, getPostOfFollowing, likeAndUnlikePost, unFollowUser } from "../controllers/post.controller.js";
 import { singleUpload } from "../middleware/multer.js";
 
 const router = express.Router();
@@ -14,7 +14,7 @@ router.route("/postOfFollowings").get(isAuthenticated, getPostOfFollowing);
 router.route("/allPosts").get(isAuthenticated, getAllPosts);
 router.route("/post/commentOnPost/:id").post(isAuthenticated, addComment);
 router.route("/post/:postId/deleteComment/:commentId").delete(isAuthenticated, deleteComment);
-router.post("/schedule", isAuthenticated, singleUpload, schedulePostController)
+// router.post("/schedule", isAuthenticated, singleUpload, schedulePostController)
 
 
 export default router;

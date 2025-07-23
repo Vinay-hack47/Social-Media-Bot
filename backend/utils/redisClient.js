@@ -1,19 +1,23 @@
 import { createClient } from 'redis';
 
-
 const client = createClient({
-  url: process.env.REDIS_URL, 
-  socket: {
-    tls: true,
-    rejectUnauthorized: false, 
-  },
+  url: process.env.REDIS_URL,
+  // For Upstash, socket options are not required if using rediss://
 });
+
+let isConnected = false;
 
 client.on('error', (err) => {
   console.error('Redis Client Error:', err);
 });
 
-// await client.connect();     -> Connect when trying to add the add a new platform, otherwise it is giving error of connection
+export async function connectRedis() {
+  if (!isConnected) {
+    await client.connect();
+    isConnected = true;
+  }
+  return client;
+}
 
 export default client;
 
