@@ -240,6 +240,7 @@ const PostCard = ({ post, onDelete, onCommentClick, refetch }) => {
   const { user } = useSelector((state) => state.auth)
   const currentUserId = user?._id
   const isOwner = currentUserId === post.owner._id
+  
 
   const [isLiked, setIsLiked] = useState(post.likes.includes(currentUserId))
   const [likeCount, setLikeCount] = useState(post.likes.length)
@@ -299,7 +300,6 @@ const PostCard = ({ post, onDelete, onCommentClick, refetch }) => {
   }
 
   const handleCommentSubmit = async () => {
-    console.log(newComment);
     
     // if (!newComment.trim()) return
     try {

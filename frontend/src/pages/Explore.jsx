@@ -14,6 +14,8 @@ const Explore = () => {
   const user = useSelector((state) => state.auth.user)
   const [feedType, setFeedType] = useState("all")
   const { posts, loading, refetch } = useExploreFeed(feedType)
+  console.log("specfic post",posts);
+  
 
 
   // Placeholder for onLike and onCommentClick handlers

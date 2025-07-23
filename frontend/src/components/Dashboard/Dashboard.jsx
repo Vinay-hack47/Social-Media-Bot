@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import Navbar from "../Navbar"
 import { useSelector } from "react-redux"
 import useGetAllUser from "@/hooks/useGetAllUser"
+import useGetAllUserScheduledPost from "@/hooks/useGetAllUserScheduledPost"
 
 const Sidebar = () => (
   
@@ -57,7 +58,10 @@ const Header = () => {
 }
 
 const MainContent = () => {
-  const { user } = useSelector((store) => store.auth)
+  const { user } = useSelector((store) => store.auth);
+  const {allUserScheduledPost} = useSelector((store) => store.post)
+  console.log(user);
+  
 
   return (
     <div className="p-6 space-y-6">
@@ -68,15 +72,15 @@ const MainContent = () => {
         </div>
         <div className="bg-green-100 p-5 rounded-2xl shadow-sm text-center">
           <p className="text-lg font-semibold text-green-800">Pending Posts</p>
-          <p className="text-2xl font-bold text-green-900">8</p>
+          <p className="text-2xl font-bold text-green-900">{allUserScheduledPost.length}</p>
         </div>
         <div className="bg-purple-100 p-5 rounded-2xl shadow-sm text-center">
           <p className="text-lg font-semibold text-purple-800">Media Files</p>
-          <p className="text-2xl font-bold text-purple-900">42</p>
+          <p className="text-2xl font-bold text-purple-900">-</p>
         </div>
         <div className="bg-yellow-100 p-5 rounded-2xl shadow-sm text-center">
           <p className="text-lg font-semibold text-yellow-800">Platforms Connected</p>
-          <p className="text-2xl font-bold text-yellow-900">3</p>
+          <p className="text-2xl font-bold text-yellow-900">{user.platforms.length}</p>
         </div>
       </div>
 
@@ -91,6 +95,7 @@ const MainContent = () => {
 }
 
 const Dashboard = () => {
+  useGetAllUserScheduledPost();
   useGetAllUser();
   return (
     <>

@@ -5,6 +5,7 @@ const postSlice = createSlice({
   initialState: {
     postOfFollowings: [],
     allPosts: [],
+    allUserScheduledPost : []
   },
   reducers: {
     //actions
@@ -14,9 +15,13 @@ const postSlice = createSlice({
     setAllPosts: (state, actions) => {
       state.allPosts = actions.payload;
     },
+    setAllUserScheduledPost: (state, actions) => {
+      state.allUserScheduledPost = actions.payload;
+    },
   }
 });
 
 export const {setPostOfFollowings} = postSlice.actions;
 export const {setAllPosts} = postSlice.actions;
+export const {setAllUserScheduledPost} = postSlice.actions;
 export default postSlice.reducer;

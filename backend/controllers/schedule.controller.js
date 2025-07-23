@@ -114,14 +114,33 @@ export const createScheduledItem = async (req, res) => {
 };
 
 
-export const getAllScheduledPostOfUser = async(req,res) =>{
+export const getAllScheduledPostOfUser = async (req, res) => {
   try {
-    const userId  = req.id;
-    const scheduledItems = await ScheduledItem.find({user:userId})
+    const userId = req.id;
 
-    res.status(200).json({scheduledItems})
-    
+    const scheduledItems = await ScheduledItem.find({ user: userId }).populate({
+          path: "user"
+        });
+
+    if (!scheduledItems.length) {
+      return res.status(200).json({
+        message: "No scheduled posts found for the user.",
+        scheduledItems: [],
+        success: true,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Scheduled posts of user",
+      scheduledItems,
+      success: true,
+    });
   } catch (error) {
     console.error("Error fetching scheduled posts:", error);
+    return res.status(500).json({
+      message: "Failed to fetch scheduled posts",
+      error: error.message,
+      success: false,
+    });
   }
-}
+};

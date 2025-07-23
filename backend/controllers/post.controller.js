@@ -190,38 +190,46 @@ export const unFollowUser = async (req, res) => {
     res.status(500).json({ message: "Server error.", error: error.message });
   }
 };
-
 export const getPostOfFollowing = async (req, res) => {
   try {
     const userId = req.id;
 
-    const user = await User.findById(userId).populate({
-      path: "followings",
-      select: "posts",
-      populate: {
-        path: "posts",
-        model: "Post", // Make sure this matches your Post model name
-      },
-    });
+    // Get current user with followings
+    const user = await User.findById(userId).populate("followings");
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
+      return res.status(404).json({ message: "User not found", success: false });
     }
 
-    // Collect all posts from the followings
-    const followingPosts = user.followings.flatMap(
-      (following) => following.posts
-    );
+    // Collect all following user IDs
+    const followingIds = user.followings.map((following) => following._id);
 
-    res.status(200).json({
+    // Get all posts created by the followings
+    const posts = await Post.find({ owner: { $in: followingIds } })
+      .sort({ createdAt: -1 }) // optional: newest first
+      .populate([
+        {
+          path: "owner",
+          select: "fullname email avatar",
+        },
+        {
+          path: "likes",
+          select: "fullname",
+        },
+        {
+          path: "comments.user",
+          select: "fullname",
+        },
+      ]);
+
+    return res.status(200).json({
       message: "Posts of following users",
       success: true,
-      posts: followingPosts,
+      posts,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error.", error: error.message });
+    console.error("Error in getPostOfFollowing:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -323,57 +331,7 @@ export const addComment = async (req, res) => {
   }
 };
 
-// export const deleteComment = async (req, res) => {
-//   try {
-//     const postId = req.params.postId;
-//     const userId = req.id;
-//     const commentId = req.params.commentId;
 
-//     const post = await Post.findById(postId);
-//     if (!post) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Post not found" });
-//     }
-
-//     // let commentIndex = -1;
-
-//     // await post.comments.forEach((item,index) =>{
-//     //   if (item.user.toString() === userId.toString()) {
-//     //     commentIndex = index;
-//     //   }
-//     // });
-
-//     // await post.comments.splice(commentIndex, 1);
-//     // await post.save();
-
-//     if (post.owner.toString() === req.user._id.toString()) {
-//       if (commentId == undefined) {
-//         return res
-//           .status(400)
-//           .json({ success: false, message: "Comment ID is required" });
-//       }
-
-//       post.comments.forEach((item, index) => {
-//         if (item._id.toString() === commentId.toString()) {
-//           return post.comments.splice(index, 1);
-//         }
-//       });
-//     } else {
-//       post.comments.forEach((item, index) => {
-//         if (item.user.toString() === userId.toString()) {
-//           return post.comments.splice(index, 1);
-//         }
-//       });
-//     }
-
-//     await post.save();
-
-//     return res.status(200).json({ message: "Comment deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error.", error: error.message });
-//   }
-// };
 
 export const deleteComment = async (req, res) => {
   try {
